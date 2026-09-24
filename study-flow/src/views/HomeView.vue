@@ -1,11 +1,11 @@
 <template>
-  <header class="navbar navbar-dark bg-dark px-3">
-    <span class="navbar-brand mb-0 h1">StudyFlow</span>
-  </header>
-
   <main class="container my-4">
+    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+      Adicionar disciplina
+    </button>
+    <CourseForm/>
 
-    <section aria-label="Disciplinas e Tarefas" class="row mt-4">
+    <section aria-label="Disciplinas e Tarefas" class="row">
       <CourseList />
     </section>
   </main>
@@ -13,4 +13,5 @@
 
 <script setup>
 import CourseList from '@/components/CourseList.vue'
+import CourseForm from '@/components/CourseForm.vue';
 </script>

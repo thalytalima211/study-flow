@@ -1,9 +1,5 @@
 <template>
   <div>
-    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addCourseModal">
-      Adicionar disciplina
-    </button>
-    <CourseForm/>
     <h2 class="h6 mb-3">Disciplinas</h2>
     <p v-if="courseStore.lista.length === 0" class="text-muted">
       Nenhuma disciplina cadastrada ainda.
@@ -24,5 +20,4 @@
 
 <script setup>
 import { courseStore, removeCourse } from '../store/course'
-import CourseForm from './CourseForm.vue';
 </script>
