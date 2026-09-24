@@ -3,16 +3,16 @@ import { reactive, watch } from 'vue'
 const STORAGE_KEY = 'studyflow-courses'
 
 export const courseColors = [
-  '#E63946', // 🔴 Vermelho
-  '#F3722C', // 🟠 Laranja
-  '#D99A00', // 🟡 Amarelo
-  '#43AA8B', // 🟢 Verde
-  '#00A878', // 🟢 Esmeralda
-  '#277DA1', // 🔵 Azul
-  '#4361EE', // 🔵 Azul intenso
-  '#7209B7', // 🟣 Roxo
-  '#C2185B', // 🩷 Rosa
-  '#6A4C93'  // 🟣 Roxo azulado
+  '#E63946', 
+  '#F3722C',
+  '#D99A00', 
+  '#43AA8B', 
+  '#00A878', 
+  '#277DA1',
+  '#4361EE',
+  '#7209B7',
+  '#C2185B',
+  '#6A4C93' 
 ]
 
 const savedCourses = JSON.parse(
@@ -46,4 +46,13 @@ export function removeCourse(id) {
   courseStore.list = courseStore.list.filter(
     c => c.id !== id
   )
+}
+
+export function updateCourse(id, name, color) {
+  const course = courseStore.list.find(course => course.id === id)
+
+  if (!course) return
+
+  course.name = name
+  course.color = color
 }

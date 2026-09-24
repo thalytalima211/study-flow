@@ -1,10 +1,9 @@
-```vue
 <template>
   <div
     class="modal fade"
-    id="addCourseModal"
+    id="courseModal"
     tabindex="-1"
-    aria-labelledby="addCourseModalLabel"
+    aria-labelledby="courseModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-dialog-centered">
@@ -12,15 +11,16 @@
 
         <div class="modal-header px-4 pt-4 pb-3">
           <div>
-            <h2
-              id="addCourseModalLabel"
-              class="modal-title fs-5 fw-bold text-dark"
-            >
-              Nova disciplina
+            <h2 id="courseModalLabel" class="modal-title fs-5 fw-bold">
+              {{ isEditing ? 'Editar disciplina' : 'Nova disciplina' }}
             </h2>
 
             <p class="text-body-secondary small mb-0 mt-1">
-              Cadastre uma disciplina para organizar seus estudos.
+              {{
+                isEditing
+                  ? 'Atualize as informações da disciplina.'
+                  : 'Cadastre uma disciplina para organizar seus estudos.'
+              }}
             </p>
           </div>
 
@@ -33,13 +33,10 @@
         </div>
 
         <div class="modal-body px-4 pb-4">
-          <form @submit.prevent="register">
+          <form @submit.prevent="submit">
 
             <div class="mb-4">
-              <label
-                for="courseName"
-                class="form-label fw-semibold"
-              >
+              <label for="courseName" class="form-label fw-semibold">
                 Nome da disciplina
               </label>
 
@@ -97,32 +94,68 @@
               <button
                 type="submit"
                 class="btn btn-primary px-4"
-                data-bs-dismiss="modal"
               >
-                Cadastrar
+                {{ isEditing ? 'Salvar alterações' : 'Cadastrar' }}
               </button>
             </div>
 
           </form>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { addCourse, courseColors } from '../stores/course'
+import { ref, computed, watch } from 'vue'
+import { addCourse, updateCourse, courseColors } from '../stores/course'
+
+const props = defineProps({
+  course: {
+    type: Object,
+    default: null
+  }
+})
 
 const name = ref('')
 const color = ref(courseColors[0])
 
-function register() {
-  addCourse(name.value.trim(), color.value)
+const isEditing = computed(() => !!props.course)
 
-  name.value = ''
-  color.value = courseColors[0]
+import { Modal } from 'bootstrap'
+
+watch(
+  () => props.course,
+  (course) => {
+    if (course) {
+      name.value = course.name
+      color.value = course.color
+    } else {
+      name.value = ''
+      color.value = courseColors[0]
+    }
+  },
+  { immediate: true }
+)
+
+function submit() {
+  if (isEditing.value) {
+    updateCourse(
+      props.course.id,
+      name.value.trim(),
+      color.value
+    )
+  } else {
+    addCourse(
+      name.value.trim(),
+      color.value
+    )
+  }
+
+  const modalElement = document.getElementById('courseModal')
+  const modal = Modal.getInstance(modalElement)
+
+  modal?.hide()
 }
 </script>
 
@@ -151,4 +184,3 @@ function register() {
   align-items: center;
 }
 </style>
-```
