@@ -51,7 +51,6 @@
             </h3>
 
             <div class="d-flex gap-1 ms-2">
-              <!-- Editar -->
               <button
                 type="button"
                 class="btn btn-sm btn-light"
@@ -83,87 +82,7 @@
             </div>
           </div>
 
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <p class="text-muted small mb-1">
-                  Tarefas
-                </p>
-                <p class="fw-semibold mb-0">
-                  {{ getCourseTasks(d.id).length }}
-                  {{ getCourseTasks(d.id).length === 1 ? 'tarefa' : 'tarefas' }}
-                </p>
-              </div>
-              <span
-                v-if="getCourseTasks(d.id).length === 0"
-                class="badge text-bg-light"
-              >
-                Sem tarefas
-              </span>
-
-            </div>
-
-            <div
-              v-if="getCourseTasks(d.id).length > 0"
-              class="list-group list-group-flush"
-            >
-
-              <div
-                v-for="task in getCourseTasks(d.id)"
-                :key="task.id"
-                class="list-group-item px-0"
-              >
-
-                <div class="d-flex align-items-start gap-2">
-                  <input
-                    class="form-check-input mt-1"
-                    type="checkbox"
-                    :checked="task.completed"
-                  />
-
-                  <div class="flex-grow-1">
-
-                    <p
-                      class="mb-0 fw-semibold"
-                      :class="{ 'text-decoration-line-through text-muted': task.completed }"
-                    >
-                      {{ task.title }}
-                    </p>
-
-                    <p class="text-body-secondary small mb-0">
-                      {{ task.description }}
-                    </p>
-
-                    <div class="d-flex align-items-center gap-2">
-
-                      <small class="text-muted">
-                        {{ formatDate(task.dueDate) }}
-                      </small>
-
-                      <span
-                        class="badge"
-                        :class="{
-                          'text-bg-danger': task.priority === 'Alta',
-                          'text-bg-warning': task.priority === 'Média',
-                          'text-bg-success': task.priority === 'Baixa'
-                        }"
-                      >
-                        {{ task.priority }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-primary w-75 mx-auto my-2"
-            @click="openTaskModal(d.id)"
-          >
-            + Adicionar tarefa
-          </button>
+          <TaskList :course-id="d.id" />
         </div>
       </div>
     </div>
@@ -233,41 +152,14 @@
 import { ref, nextTick } from 'vue'
 import { Modal } from 'bootstrap'
 
+import TaskList from '@/components/TaskList.vue'
 import CourseForm from '@/components/CourseForm.vue'
 import TaskForm from '@/components/TaskForm.vue'
 
 import { courseStore, removeCourse } from '@/stores/course'
-import { taskStore } from '../stores/task'
 
 const selectedCourse = ref(null)
 const courseToDelete = ref(null)
-const selectedTask = ref(null)
-const selectedCourseId = ref(null)
-
-function formatDate(date) {
-  if (!date) return ''
-
-  return new Date(`${date}T00:00:00`)
-    .toLocaleDateString('pt-BR')
-}
-
-function getCourseTasks(courseId) {
-  return taskStore.list.filter(
-    task => task.courseId === courseId
-  )
-}
-
-async function openTaskModal(courseId) {
-  selectedTask.value = null
-  selectedCourseId.value = courseId
-
-  await nextTick()
-
-  const modalElement = document.getElementById('taskModal')
-  const modal = Modal.getOrCreateInstance(modalElement)
-
-  modal.show()
-}
 
 async function openEditModal(course) {
   selectedCourse.value = course

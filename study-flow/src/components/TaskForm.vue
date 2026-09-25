@@ -1,7 +1,7 @@
 <template>
   <div
     class="modal modal-lg fade"
-    id="taskModal"
+    :id="id"
     tabindex="-1"
     aria-labelledby="taskModalLabel"
     aria-hidden="true"
@@ -154,6 +154,11 @@ const props = defineProps({
   courseId: {
     type: [String, Number],
     default: null
+  },
+
+  id: {
+    type: String,
+    required: true
   }
 })
 
@@ -198,7 +203,7 @@ function submit() {
     addTask(taskData)
   }
 
-  const modalElement = document.getElementById('taskModal')
+  const modalElement = document.getElementById(props.id)
   const modal = Modal.getInstance(modalElement)
 
   modal?.hide()
