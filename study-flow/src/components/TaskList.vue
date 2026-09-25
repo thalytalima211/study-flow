@@ -1,7 +1,6 @@
 <template>
   <div class="card-body">
 
-    <!-- Cabeçalho das tarefas -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <p class="text-muted small mb-1">
@@ -9,8 +8,8 @@
         </p>
 
         <p class="fw-semibold mb-0">
-          {{ courseTasks.length }}
-          {{ courseTasks.length === 1 ? 'tarefa' : 'tarefas' }}
+          {{ pendingTasks.length }}
+          {{ pendingTasks.length === 1 ? 'tarefa pendente' : 'tarefas pendentes' }}
         </p>
       </div>
 
@@ -22,37 +21,27 @@
       </span>
     </div>
 
-    <!-- Lista de tarefas -->
     <div
-      v-if="courseTasks.length > 0"
+      v-if="pendingTasks.length > 0"
       class="list-group list-group-flush"
     >
-
       <div
-        v-for="task in courseTasks"
+        v-for="task in pendingTasks"
         :key="task.id"
         class="list-group-item px-0"
       >
-
         <div class="d-flex align-items-start gap-2">
 
-          <!-- Concluir tarefa -->
           <input
             class="form-check-input mt-1"
             type="checkbox"
             :checked="task.completed"
+            @change="toggleTask(task.id)"
           />
 
-          <!-- Informações -->
           <div class="flex-grow-1">
 
-            <p
-              class="mb-0 fw-semibold"
-              :class="{
-                'text-decoration-line-through text-muted':
-                  task.completed
-              }"
-            >
+            <p class="mb-0 fw-semibold">
               {{ task.title }}
             </p>
 
@@ -86,7 +75,6 @@
           <!-- Ações -->
           <div class="d-flex gap-1">
 
-            <!-- Editar -->
             <button
               type="button"
               class="btn btn-sm btn-light"
@@ -96,13 +84,11 @@
               @click="openEditModal(task)"
             >
               ✎
-
               <span class="visually-hidden">
                 Editar tarefa
               </span>
             </button>
 
-            <!-- Excluir -->
             <button
               type="button"
               class="btn btn-sm btn-light"
@@ -112,7 +98,6 @@
               @click="openDeleteModal(task)"
             >
               ×
-
               <span class="visually-hidden">
                 Excluir tarefa
               </span>
@@ -124,7 +109,94 @@
       </div>
     </div>
 
-    <!-- Adicionar tarefa -->
+    <div
+      v-if="completedTasks.length > 0"
+      class="border-top my-3 pt-3"
+    >
+      <p class="text-muted small fw-semibold mb-2">
+        Concluídas
+      </p>
+
+      <div class="list-group list-group-flush">
+        <div
+          v-for="task in completedTasks"
+          :key="task.id"
+          class="list-group-item px-0"
+        >
+          <div class="d-flex align-items-start gap-2">
+
+            <input
+              class="form-check-input mt-1"
+              type="checkbox"
+              :checked="task.completed"
+              @change="toggleTask(task.id)"
+            />
+
+            <div class="flex-grow-1">
+
+              <p
+                class="mb-0 fw-semibold text-muted text-decoration-line-through"
+              >
+                {{ task.title }}
+              </p>
+
+              <p
+                v-if="task.description"
+                class="text-body-secondary small mb-0"
+              >
+                {{ task.description }}
+              </p>
+
+              <div class="d-flex align-items-center gap-2">
+
+                <small class="text-muted">
+                  {{ formatDate(task.dueDate) }}
+                </small>
+
+                <span class="badge text-bg-light">
+                  {{ task.priority }}
+                </span>
+
+              </div>
+            </div>
+
+            <div class="d-flex gap-1">
+
+              <button
+                type="button"
+                class="btn btn-sm btn-light"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Editar tarefa"
+                @click="openEditModal(task)"
+              >
+                ✎
+                <span class="visually-hidden">
+                  Editar tarefa
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-light"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Excluir tarefa"
+                @click="openDeleteModal(task)"
+              >
+                ×
+                <span class="visually-hidden">
+                  Excluir tarefa
+                </span>
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
     <button
       type="button"
       class="btn btn-sm btn-outline-primary w-100 mt-3"
@@ -135,14 +207,12 @@
 
   </div>
 
-  <!-- Formulário de tarefa -->
   <TaskForm
     :id="taskModalId"
     :task="selectedTask"
     :course-id="courseId"
   />
 
-  <!-- Modal de confirmação de exclusão -->
   <div
     class="modal fade"
     :id="deleteModalId"
@@ -170,7 +240,6 @@
         </div>
 
         <div class="modal-body pt-3">
-
           <p class="mb-2">
             Tem certeza que deseja excluir a tarefa
             <strong>{{ taskToDelete?.title }}</strong>?
@@ -179,11 +248,9 @@
           <p class="text-body-secondary small mb-0">
             Essa ação não poderá ser desfeita.
           </p>
-
         </div>
 
         <div class="modal-footer border-0 pt-0">
-
           <button
             type="button"
             class="btn btn-light"
@@ -199,7 +266,6 @@
           >
             Excluir
           </button>
-
         </div>
 
       </div>
@@ -215,7 +281,8 @@ import TaskForm from '@/components/TaskForm.vue'
 
 import {
   taskStore,
-  removeTask
+  removeTask,
+  toggleTask
 } from '@/stores/task'
 
 const props = defineProps({
@@ -234,6 +301,18 @@ const deleteModalId = `deleteTaskModal-${props.courseId}`
 const courseTasks = computed(() => {
   return taskStore.list.filter(
     task => task.courseId === props.courseId
+  )
+})
+
+const pendingTasks = computed(() => {
+  return courseTasks.value.filter(
+    task => !task.completed
+  )
+})
+
+const completedTasks = computed(() => {
+  return courseTasks.value.filter(
+    task => task.completed
   )
 })
 
