@@ -38,6 +38,36 @@
         <div class="modal-body px-4 pb-4">
           <form @submit.prevent="submit">
 
+            <div
+              v-if="showCourseSelect"
+              class="mb-4"
+            >
+              <label
+                for="taskCourse"
+                class="form-label fw-semibold"
+              >
+                Disciplina
+              </label>
+
+              <select
+                id="taskCourse"
+                v-model="selectedCourseId"
+                class="form-select"
+                required
+              >
+                <option value="" disabled>
+                  Selecione uma disciplina
+                </option>
+
+                <option
+                  v-for="course in courseStore.list"
+                  :key="course.id"
+                  :value="course.id"
+                >
+                  {{ course.name }}
+                </option>
+              </select>
+            </div>
             <div class="mb-3">
               <label
                 for="taskTitle"
@@ -139,6 +169,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Modal } from 'bootstrap'
+import { courseStore } from '@/stores/course'
 
 import {
   addTask,
@@ -146,42 +177,42 @@ import {
 } from '../stores/task'
 
 const props = defineProps({
-  task: {
-    type: Object,
-    default: null
-  },
-
-  courseId: {
-    type: [String, Number],
-    default: null
-  },
-
-  id: {
-    type: String,
-    required: true
-  }
-})
+  task: { 
+    type: Object, 
+    default: null }, 
+  courseId: { 
+    type: [String, Number], 
+    default: null }, 
+  id: { 
+    type: String, 
+    required: true }, 
+  showCourseSelect: { 
+    type: Boolean, 
+    default: false } })
 
 const title = ref('')
 const description = ref('')
 const dueDate = ref('')
 const priority = ref('Média')
+const selectedCourseId = ref('')
 
 const isEditing = computed(() => !!props.task)
 
 watch(
   () => [props.task, props.courseId],
-  ([task]) => {
+  ([task, courseId]) => {
     if (task) {
       title.value = task.title
       description.value = task.description
       dueDate.value = task.dueDate
       priority.value = task.priority
+      selectedCourseId.value = task.courseId
     } else {
       title.value = ''
       description.value = ''
       dueDate.value = ''
       priority.value = 'Média'
+      selectedCourseId.value = courseId || ''
     }
   },
   { immediate: true }
@@ -191,7 +222,7 @@ function submit() {
   const taskData = {
     title: title.value.trim(),
     description: description.value.trim(),
-    courseId: props.task?.courseId ?? props.courseId,
+    courseId: selectedCourseId.value,
     dueDate: dueDate.value,
     priority: priority.value,
     completed: props.task?.completed ?? false
