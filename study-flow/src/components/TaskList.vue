@@ -12,15 +12,22 @@
           {{ pendingTasks.length === 1 ? 'tarefa pendente' : 'tarefas pendentes' }}
         </p>
       </div>
-
+      
       <span
-        v-if="courseTasks.length === 0"
-        class="badge text-bg-light"
+      v-if="courseTasks.length === 0"
+      class="badge text-bg-light"
       >
-        Sem tarefas
-      </span>
-    </div>
-
+      Sem tarefas
+    </span>
+  </div>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-primary w-100 mb-2"
+      @click="openCreateModal"
+    >
+      + Adicionar tarefa
+    </button>
+  
     <div
       v-if="pendingTasks.length > 0"
       class="list-group list-group-flush"
@@ -197,13 +204,6 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="btn btn-sm btn-outline-primary w-100 mt-3"
-      @click="openCreateModal"
-    >
-      + Adicionar tarefa
-    </button>
 
   </div>
 

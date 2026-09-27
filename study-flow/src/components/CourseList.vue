@@ -10,11 +10,6 @@
 
     <CourseForm :course="selectedCourse" />
 
-    <TaskForm
-      :task="selectedTask"
-      :course-id="selectedCourseId"
-    />
-
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h2 class="h6 mb-1">Disciplinas</h2>
@@ -38,17 +33,30 @@
       <div
         v-for="d in courseStore.list"
         :key="d.id"
-        class="col-12 col-md-6 col-xl-4"
+        class="col-12 col-lg-6 col-xl-4"
       >
-        <div class="card h-100 border-0 shadow-sm">
+        <div class="card border-0 shadow-sm">
 
           <div
             class="card-header border-0 d-flex justify-content-between align-items-center"
             :style="{ backgroundColor: d.color }"
           >
-            <h3 class="h6 text-white mb-0 text-truncate">
-              {{ d.name }}
-            </h3>
+
+            <button
+              type="button"
+              class="btn btn-link text-white text-decoration-none p-0 flex-grow-1 text-start"
+              @click="toggleCourse(d.id)"
+              :aria-expanded="!collapsedCourses[d.id]"
+              :aria-controls="`course-content-${d.id}`"
+            >
+              <h3 class="h6 mb-0 text-truncate">
+                <span class="me-1">
+                  {{ collapsedCourses[d.id] ? '▸' : '▾' }}
+                </span>
+
+                {{ d.name }}
+              </h3>
+            </button>
 
             <div class="d-flex gap-1 ms-2">
               <button
@@ -82,7 +90,14 @@
             </div>
           </div>
 
-          <TaskList :course-id="d.id" />
+          <div
+            v-show="!collapsedCourses[d.id]"
+            :id="`course-content-${d.id}`"
+            class="course-content"
+          >
+            <TaskList :course-id="d.id" />
+          </div>
+
         </div>
       </div>
     </div>
@@ -98,6 +113,7 @@
         <div class="modal-content border-0 rounded-4">
 
           <div class="modal-header border-0 pb-0">
+
             <h2
               id="deleteCourseModalLabel"
               class="modal-title fs-5 fw-bold"
@@ -111,9 +127,11 @@
               data-bs-dismiss="modal"
               aria-label="Fechar"
             ></button>
+
           </div>
 
           <div class="modal-body pt-3">
+
             <p class="mb-2">
               Tem certeza que deseja excluir a disciplina
               <strong>{{ courseToDelete?.name }}</strong>?
@@ -122,9 +140,11 @@
             <p class="text-body-secondary small mb-0">
               Essa ação não poderá ser desfeita.
             </p>
+
           </div>
 
           <div class="modal-footer border-0 pt-0">
+
             <button
               type="button"
               class="btn btn-light"
@@ -140,26 +160,37 @@
             >
               Excluir
             </button>
+
           </div>
 
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { Modal } from 'bootstrap'
 
 import TaskList from '@/components/TaskList.vue'
 import CourseForm from '@/components/CourseForm.vue'
-import TaskForm from '@/components/TaskForm.vue'
 
-import { courseStore, removeCourse } from '@/stores/course'
+import {
+  courseStore,
+  removeCourse
+} from '@/stores/course'
 
 const selectedCourse = ref(null)
 const courseToDelete = ref(null)
+
+const collapsedCourses = reactive({})
+
+function toggleCourse(courseId) {
+  collapsedCourses[courseId] =
+    !collapsedCourses[courseId]
+}
 
 async function openEditModal(course) {
   selectedCourse.value = course
@@ -184,8 +215,11 @@ function openCreateModal() {
 function openDeleteModal(course) {
   courseToDelete.value = course
 
-  const modalElement = document.getElementById('deleteCourseModal')
-  const modal = Modal.getOrCreateInstance(modalElement)
+  const modalElement =
+    document.getElementById('deleteCourseModal')
+
+  const modal =
+    Modal.getOrCreateInstance(modalElement)
 
   modal.show()
 }
@@ -195,7 +229,9 @@ function confirmDelete() {
 
   removeCourse(courseToDelete.value.id)
 
-  const modalElement = document.getElementById('deleteCourseModal')
+  const modalElement =
+    document.getElementById('deleteCourseModal')
+
   const modal = Modal.getInstance(modalElement)
 
   modal?.hide()
@@ -203,3 +239,10 @@ function confirmDelete() {
   courseToDelete.value = null
 }
 </script>
+
+<style scoped>
+.course-content {
+  max-height: 350px;
+  overflow-y: auto;
+}
+</style>
