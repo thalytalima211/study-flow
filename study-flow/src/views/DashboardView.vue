@@ -1,7 +1,6 @@
 <template>
   <div class="container my-4">
 
-    <!-- Cabeçalho -->
     <div class="mb-4">
       <h1 class="h4 fw-bold mb-1">
         Dashboard
@@ -12,10 +11,8 @@
       </p>
     </div>
 
-    <!-- Resumo -->
     <div class="row g-3 mb-4">
 
-      <!-- Total -->
       <div class="col-12 col-md-4">
         <div
           class="card dashboard-card dashboard-card-total border-0 shadow-sm h-100"
@@ -32,7 +29,6 @@
         </div>
       </div>
 
-      <!-- Pendentes -->
       <div class="col-12 col-md-4">
         <div
           class="card dashboard-card dashboard-card-pending border-0 shadow-sm h-100"
@@ -49,7 +45,6 @@
         </div>
       </div>
 
-      <!-- Concluídas -->
       <div class="col-12 col-md-4">
         <div
           class="card dashboard-card dashboard-card-completed border-0 shadow-sm h-100"
@@ -68,7 +63,6 @@
 
     </div>
 
-    <!-- Filtros -->
     <div class="card dashboard-filter-card border-0 shadow-sm mb-4">
       <div class="card-body">
 
@@ -97,7 +91,6 @@
 
         <div class="row g-3">
 
-          <!-- Disciplina -->
           <div class="col-12 col-md-4">
             <label
               for="filterCourse"
@@ -125,7 +118,6 @@
             </select>
           </div>
 
-          <!-- Status -->
           <div class="col-12 col-md-4">
             <label
               for="filterStatus"
@@ -153,7 +145,6 @@
             </select>
           </div>
 
-          <!-- Prioridade -->
           <div class="col-12 col-md-4">
             <label
               for="filterPriority"
@@ -189,10 +180,8 @@
       </div>
     </div>
 
-    <!-- Lista de tarefas -->
     <div class="card border-0 shadow-sm">
 
-      <!-- Cabeçalho -->
       <div
         class="card-header bg-white border-0 pt-4 px-4
                d-flex justify-content-between align-items-center"
@@ -221,10 +210,8 @@
         </button>
       </div>
 
-      <!-- Corpo -->
       <div class="card-body px-4">
 
-        <!-- Nenhuma tarefa -->
         <div
           v-if="filteredTasks.length === 0"
           class="text-center text-muted py-5"
@@ -238,137 +225,230 @@
           </small>
         </div>
 
-        <!-- Tarefas -->
         <div
           v-else
           class="list-group list-group-flush"
         >
 
-          <div
-            v-for="task in filteredTasks"
-            :key="task.id"
-            class="list-group-item task-item px-3 py-3"
-          >
+          <template v-if="pendingFilteredTasks.length > 0">
+            <div class="mb-3">
+              <p class="text-muted small fw-semibold mb-2">
+                Tarefas pendentes
+              </p>
 
-            <div class="d-flex align-items-start gap-3">
+              <div
+                v-for="task in pendingFilteredTasks"
+                :key="task.id"
+                class="list-group-item task-item px-3 py-3"
+              >
 
-              <!-- Checkbox -->
-              <input
-                class="form-check-input mt-1"
-                type="checkbox"
-                :checked="task.completed"
-                :aria-label="`Concluir tarefa ${task.title}`"
-                @change="toggleTask(task.id)"
-              />
+                <div class="d-flex align-items-start gap-3">
 
-              <!-- Conteúdo -->
-              <div class="flex-grow-1">
+                  <input
+                    class="form-check-input mt-1"
+                    type="checkbox"
+                    :checked="task.completed"
+                    :aria-label="`Concluir tarefa ${task.title}`"
+                    @change="toggleTask(task.id)"
+                  />
 
-                <div
-                  class="d-flex align-items-center
-                         gap-2 flex-wrap"
-                >
+                  <div class="flex-grow-1">
 
-                  <p
-                    class="fw-semibold mb-0"
-                    :class="{
-                      'text-decoration-line-through text-muted':
-                        task.completed
-                    }"
-                  >
-                    {{ task.title }}
-                  </p>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
 
-                  <span
-                    class="badge"
-                    :class="{
-                      'text-bg-danger': task.priority === 'Alta',
-                      'text-bg-warning': task.priority === 'Média',
-                      'text-bg-success': task.priority === 'Baixa'
-                    }"
-                  >
-                    {{ task.priority }}
-                  </span>
+                      <p class="fw-semibold mb-0">
+                        {{ task.title }}
+                      </p>
 
-                </div>
+                      <span
+                        class="badge"
+                        :class="{
+                          'text-bg-danger': task.priority === 'Alta',
+                          'text-bg-warning': task.priority === 'Média',
+                          'text-bg-success': task.priority === 'Baixa'
+                        }"
+                      >
+                        {{ task.priority }}
+                      </span>
 
-                <p
-                  v-if="task.description"
-                  class="text-body-secondary small mb-1"
-                >
-                  {{ task.description }}
-                </p>
+                    </div>
 
-                <div
-                  class="d-flex align-items-center
-                         gap-3 flex-wrap"
-                >
+                    <p
+                      v-if="task.description"
+                      class="text-body-secondary small mb-1"
+                    >
+                      {{ task.description }}
+                    </p>
 
-                  <small class="text-muted">
-                    {{ getCourseName(task.courseId) }}
-                  </small>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                  <small class="text-muted">
-                    {{ formatDate(task.dueDate) }}
-                  </small>
+                      <small class="text-muted">
+                        {{ getCourseName(task.courseId) }}
+                      </small>
 
-                  <small
-                    :class="task.completed
-                      ? 'text-success'
-                      : 'text-muted'"
-                  >
-                    {{ task.completed ? 'Concluída' : 'Pendente' }}
-                  </small>
+                      <small class="text-muted">
+                        {{ formatDate(task.dueDate) }}
+                      </small>
+
+                      <small class="text-muted">
+                        Pendente
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                  <div class="d-flex gap-1">
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Editar tarefa"
+                      @click="openEditModal(task)"
+                    >
+                      ✎
+                      <span class="visually-hidden">
+                        Editar tarefa
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Excluir tarefa"
+                      @click="openDeleteModal(task)"
+                    >
+                      ×
+                      <span class="visually-hidden">
+                        Excluir tarefa
+                      </span>
+                    </button>
+
+                  </div>
 
                 </div>
 
               </div>
+            </div>
+          </template>
 
-              <!-- Ações -->
-              <div class="d-flex gap-1">
+          <template v-if="completedFilteredTasks.length > 0">
+            <div class="completed-section mt-4 pt-3">
 
-                <!-- Editar -->
-                <button
-                  type="button"
-                  class="btn btn-sm btn-light"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title="Editar tarefa"
-                  @click="openEditModal(task)"
-                >
-                  ✎
+              <p class="text-muted small fw-semibold mb-2">
+                Tarefas concluídas
+              </p>
 
-                  <span class="visually-hidden">
-                    Editar tarefa
-                  </span>
-                </button>
+              <div
+                v-for="task in completedFilteredTasks"
+                :key="task.id"
+                class="list-group-item task-item completed-task px-3 py-3"
+              >
 
-                <!-- Excluir -->
-                <button
-                  type="button"
-                  class="btn btn-sm btn-light"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title="Excluir tarefa"
-                  @click="openDeleteModal(task)"
-                >
-                  ×
+                <div class="d-flex align-items-start gap-3">
 
-                  <span class="visually-hidden">
-                    Excluir tarefa
-                  </span>
-                </button>
+                  <input
+                    class="form-check-input mt-1"
+                    type="checkbox"
+                    :checked="task.completed"
+                    :aria-label="`Desmarcar tarefa ${task.title}`"
+                    @change="toggleTask(task.id)"
+                  />
+
+                  <div class="flex-grow-1">
+
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                      <p class="fw-semibold mb-0 text-decoration-line-through text-muted">
+                        {{ task.title }}
+                      </p>
+
+                      <span
+                        class="badge"
+                        :class="{
+                          'text-bg-danger': task.priority === 'Alta',
+                          'text-bg-warning': task.priority === 'Média',
+                          'text-bg-success': task.priority === 'Baixa'
+                        }"
+                      >
+                        {{ task.priority }}
+                      </span>
+
+                    </div>
+
+                    <p
+                      v-if="task.description"
+                      class="text-body-secondary small mb-1"
+                    >
+                      {{ task.description }}
+                    </p>
+
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                      <small class="text-muted">
+                        {{ getCourseName(task.courseId) }}
+                      </small>
+
+                      <small class="text-muted">
+                        {{ formatDate(task.dueDate) }}
+                      </small>
+
+                      <small class="text-success">
+                        Concluída
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                  <div class="d-flex gap-1">
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Editar tarefa"
+                      @click="openEditModal(task)"
+                    >
+                      ✎
+                      <span class="visually-hidden">
+                        Editar tarefa
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Excluir tarefa"
+                      @click="openDeleteModal(task)"
+                    >
+                      ×
+                      <span class="visually-hidden">
+                        Excluir tarefa
+                      </span>
+                    </button>
+
+                  </div>
+
+                </div>
 
               </div>
 
             </div>
-          </div>
+          </template>
 
         </div>
+
       </div>
     </div>
 
-    <!-- Modal de tarefa -->
     <TaskForm
       id="dashboardTaskModal"
       :task="selectedTask"
@@ -376,7 +456,6 @@
       :show-course-select="true"
     />
 
-    <!-- Modal de exclusão -->
     <div
       id="dashboardDeleteTaskModal"
       class="modal fade"
@@ -506,6 +585,43 @@ const filteredTasks = computed(() => {
       matchesPriority
     )
   })
+})
+
+function priorityValue(priority) {
+  const priorities = {
+    'Alta': 1,
+    'Média': 2,
+    'Baixa': 3
+  }
+
+  return priorities[priority] ?? 4
+}
+
+function sortTasks(tasks) {
+  return [...tasks].sort((a, b) => {
+    const dateA = new Date(`${a.dueDate}T00:00:00`)
+    const dateB = new Date(`${b.dueDate}T00:00:00`)
+
+    const dateDifference = dateA - dateB
+
+    if (dateDifference !== 0) {
+      return dateDifference
+    }
+
+    return priorityValue(a.priority) - priorityValue(b.priority)
+  })
+}
+
+const pendingFilteredTasks = computed(() => {
+  return sortTasks(
+    filteredTasks.value.filter(task => !task.completed)
+  )
+})
+
+const completedFilteredTasks = computed(() => {
+  return sortTasks(
+    filteredTasks.value.filter(task => task.completed)
+  )
 })
 
 const hasFilters = computed(() => {

@@ -298,6 +298,31 @@ const taskToDelete = ref(null)
 const taskModalId = `taskModal-${props.courseId}`
 const deleteModalId = `deleteTaskModal-${props.courseId}`
 
+function priorityValue(priority) {
+  const priorities = {
+    'Alta': 1,
+    'Média': 2,
+    'Baixa': 3
+  }
+
+  return priorities[priority] ?? 4
+}
+
+function sortTasks(tasks) {
+  return [...tasks].sort((a, b) => {
+    const dateA = new Date(`${a.dueDate}T00:00:00`)
+    const dateB = new Date(`${b.dueDate}T00:00:00`)
+
+    const dateDifference = dateA - dateB
+
+    if (dateDifference !== 0) {
+      return dateDifference
+    }
+
+    return priorityValue(a.priority) - priorityValue(b.priority)
+  })
+}
+
 const courseTasks = computed(() => {
   return taskStore.list.filter(
     task => task.courseId === props.courseId
@@ -305,14 +330,14 @@ const courseTasks = computed(() => {
 })
 
 const pendingTasks = computed(() => {
-  return courseTasks.value.filter(
-    task => !task.completed
+  return sortTasks(
+    courseTasks.value.filter(task => !task.completed)
   )
 })
 
 const completedTasks = computed(() => {
-  return courseTasks.value.filter(
-    task => task.completed
+  return sortTasks(
+    courseTasks.value.filter(task => task.completed)
   )
 })
 
