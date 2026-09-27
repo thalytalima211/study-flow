@@ -24,9 +24,11 @@ jobs:
           node-version: 24
 
       - name: Instalar dependências
+        working-directory: ./study-flow
         run: npm ci
 
       - name: Gerar build
+        working-directory: ./study-flow
         run: npm run build
 
       - name: Configurar Pages
@@ -35,7 +37,7 @@ jobs:
       - name: Upload do build
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./study-flow/dist
 
       - name: Publicar
         uses: actions/deploy-pages@v4
