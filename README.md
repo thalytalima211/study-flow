@@ -62,29 +62,80 @@ Os dados das disciplinas e tarefas são armazenados no **LocalStorage** do naveg
 - **GitHub**
 - **GitHub Pages**
 
-## 🧩 Organização do projeto
+## 🚀 Como executar o projeto
+### Pré-requisitos
 
-```text
-study-flow/
-├── public/
-├── src/
-│   ├── components/
-│   │   ├── CourseForm.vue
-│   │   ├── TaskForm.vue
-│   │   └── TaskList.vue
-│   │
-│   ├── stores/
-│   │   ├── course.js
-│   │   └── task.js
-│   │
-│   ├── views/
-│   │   └── Dashboard.vue
-│   │
-│   └── ...
-│
-├── .gitignore
-├── index.html
-├── package.json
-├── package-lock.json
-├── vite.config.js
-└── README.md
+É necessário ter instalado:
+
+- Node.js
+- npm
+
+### Instalação
+
+Clone o repositório:
+
+```git clone https://github.com/thalytalima211/study-flow.git```
+
+Entre na pasta do projeto:
+
+```cd study-flow/study-flow```
+
+Instale as dependências:
+
+```npm install```
+
+Execute o projeto em ambiente de desenvolvimento:
+
+```npm run dev```
+
+O Vite disponibilizará um endereço local para acessar a aplicação.
+
+## 🌐 Aplicação publicada
+
+O StudyFlow está disponível no GitHub Pages:
+
+https://thalytalima211.github.io/study-flow/
+
+## 🚢 Deploy
+
+O projeto utiliza GitHub Actions para realizar o processo de build e publicação no GitHub Pages.
+
+A cada atualização enviada para a branch main, o workflow:
+
+- Baixa o código do repositório;
+- Configura o Node.js;
+- Instala as dependências;
+-Executa o build do projeto;
+- Publica a pasta dist/ no GitHub Pages.
+  
+## 🤖 Uso de Inteligência Artificial
+
+A Inteligência Artificial foi utilizada como ferramenta de apoio durante o desenvolvimento do projeto, principalmente para:
+
+- esclarecimento de dúvidas sobre Vue.js, JavaScript e Bootstrap;
+- dentificação e correção de erros;
+- discussão da organização dos componentes;
+- sugestões de implementação;
+- revisão de trechos de código;
+- auxílio na documentação do projeto.
+
+As decisões de implementação, integração dos recursos e testes da aplicação foram realizadas durante o desenvolvimento do projeto.
+
+## 📌 Possíveis melhorias
+
+Algumas funcionalidades que podem ser adicionadas futuramente:
+
+- Autenticação de usuários;
+- Banco de dados para armazenamento das informações;
+- Sincronização entre dispositivos;
+- Notificações de tarefas próximas do vencimento;
+- Calendário acadêmico;
+- Relatórios de produtividade;
+- Temas claro e escuro;
+- Categorias adicionais para organização das tarefas.
+  
+## 👩‍💻 Autora
+
+Thalyta Lima
+
+Projeto desenvolvido para a disciplina de Tópicos Avançados em Projeto e Desenvolvimento Web — IFCE.
