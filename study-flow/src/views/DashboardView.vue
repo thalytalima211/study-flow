@@ -282,7 +282,12 @@
 
                     <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                      <small class="text-muted">
+                      <small class="text-muted d-flex align-items-center gap-2">
+                        <span
+                          class="course-color-dot"
+                          :style="{ backgroundColor: getCourseColor(task.courseId) }"
+                        ></span>
+
                         {{ getCourseName(task.courseId) }}
                       </small>
 
@@ -389,7 +394,12 @@
 
                     <div class="d-flex align-items-center gap-3 flex-wrap">
 
-                      <small class="text-muted">
+                      <small class="text-muted d-flex align-items-center gap-2">
+                        <span
+                          class="course-color-dot"
+                          :style="{ backgroundColor: getCourseColor(task.courseId) }"
+                        ></span>
+
                         {{ getCourseName(task.courseId) }}
                       </small>
 
@@ -646,6 +656,14 @@ function getCourseName(courseId) {
   return course?.name ?? 'Disciplina não encontrada'
 }
 
+function getCourseColor(courseId) {
+  const course = courseStore.list.find(
+    course => String(course.id) === String(courseId)
+  )
+
+  return course?.color ?? '#6c757d'
+}
+
 function formatDate(date) {
   if (!date) return ''
 
@@ -742,5 +760,12 @@ function confirmDelete() {
 
 .task-item:last-child {
   margin-bottom: 0;
+}
+
+.course-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 </style>
